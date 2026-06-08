@@ -2,7 +2,7 @@
 
 Signal Lab is a Python DSP lab notebook for building, tracing, comparing, and debugging signal-processing pipelines.
 
-It is not meant to replace NumPy or SciPy. Instead, it provides a higher-level workflow for experiments:
+It provides a higher-level workflow for learning/experiments than numpy or scipy:
 
 ```text
 create signal → transform signal → automatically trace stages → compare before/after → catch DSP mistakes
