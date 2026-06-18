@@ -57,7 +57,7 @@ class Signal:
         name: str | None = None,
         trace_enabled: bool = True,
     ) -> Signal:
-        check_frequency_below_nyquist(freq, sample_rate, label="sine frequency")
+        initial_warnings = check_frequency_below_nyquist(freq, sample_rate, label="sine frequency")
         t = np.arange(int(duration * sample_rate)) / sample_rate
         data = amplitude * np.sin(2 * np.pi * freq * t + phase)
         sig = cls(
@@ -66,7 +66,7 @@ class Signal:
             name=name or f"sine_{freq:g}Hz",
             metadata={"kind": "sine", "freq": freq, "amplitude": amplitude, "phase": phase},
         )
-        return sig._with_initial_trace(trace_enabled, operation="create_sine")
+        return sig._with_initial_trace(trace_enabled, operation="create_sine", warnings=initial_warnings)
 
     @classmethod
     def noise(
@@ -88,10 +88,12 @@ class Signal:
         )
         return sig._with_initial_trace(trace_enabled, operation="create_noise")
 
-    def _with_initial_trace(self, trace_enabled: bool, operation: str) -> Signal:
+    def _with_initial_trace(
+        self, trace_enabled: bool, operation: str, warnings: list[DSPWarning] | None = None
+    ) -> Signal:
         if not trace_enabled:
             return self
-        trace = SignalTrace().add(self, operation=operation, params=self.metadata or {})
+        trace = SignalTrace().add(self, operation=operation, params=self.metadata or {}, warnings=warnings or [])
         return replace(self, trace=trace)
 
     def _spawn(
